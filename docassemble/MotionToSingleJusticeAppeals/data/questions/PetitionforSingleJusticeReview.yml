@@ -4,6 +4,9 @@ include:
   - docassemble.AffidavitofIndigencyMAVC:affidavit_body.yml
   - docassemble.MassAppealsCourt:appeals-basic-questions.yml
 ---
+metadata: 
+  title: Single Justice Appeals
+---
 code: |
   courts[0] = macourts.matching_appeals_court("")
 ---
