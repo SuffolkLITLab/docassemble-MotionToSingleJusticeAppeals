@@ -1,0 +1,415 @@
+---
+include:
+  - docassemble.MAVirtualCourt:basic-questions.yml
+  - docassemble.AffidavitofIndigencyMAVC:affidavit_body.yml
+  - docassemble.MassAppealsCourt:appeals-basic-questions.yml
+---
+code: |
+  courts[0] = macourts.matching_appeals_court("")
+---
+code: |
+  interview_short_title = "Ask the Appeals Court to review the Trial Court order"
+---
+id: interview order
+mandatory: True
+code: |
+  user_role = "defendant"
+  appeals_basic_questions_intro_screen
+  info_screen
+  user_needs_interpreter
+  users[0].name.first
+  users[0].address.address
+  users[0].mobile_number
+  users.there_is_another = False
+  users.gathered = True
+  plaintiff_name
+  defendant_name
+  trial_court
+  trial_court_docket_number
+  trial_court_interlocutory_order_date
+  nature_of_order
+  trial_court_judge
+  legal_issues
+  file_type
+  if file_type == "I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration":  
+    motion_reconsideration_denied_date 
+    trial_court_judge_text
+  relief_sought 
+  parties_to_be_served
+  method_of_service
+  parties_to_be_served
+  service_date
+  procedural_history
+  statement_of_facts
+  product_of_error
+  argument_summary
+  record_appendix
+  indigency_intro
+  fees['Appeal cost'].waive = True
+  fees['Appeal cost'].amount = 315.00
+  ask_affidavit_questions
+  if not is_indigent:
+    doesnt_qualify_interstitial
+  basic_questions_signature_flow
+  users[0].signature
+  download
+--- 
+id: info screen
+question: |
+  Petition for Single Justice Review
+subquestion: |
+  This interview is meant to help those who have not already received a judgment from a trial court and who are not happy with a pre-judgment order. Thus, filling out this interview will help you file a petition to the single judge of the Appeals Court. 
+continue button field: info_screen
+---
+id: explain affidavit of indigency
+continue button field: indigency_intro
+question: |
+  Fee waiver questions
+subquestion: |
+  The next questions will be used to find out if you
+  qualify for a fee waiver. The fee to file a Motion to Stay
+  is $315.00.
+---
+id: contact information
+question: |
+  Contact information
+subquestion: |
+  Provide at least one other way for the court to reach you. 
+fields:
+  - Mobile number: users[0].mobile_number
+    required: False
+  - Other phone number: users[0].phone_number
+    required: False
+validation code: |
+  if (not showifdef('users[0].phone_number') and 
+      (not showifdef('users[0].mobile_number'))):
+    validation_error(word("You need to provide at least one other contact method."))
+---
+id: user address
+question: |
+  What is your address?
+subquestion: |
+  List the address where you want the court to mail papers to you.
+fields:
+  - Email address: users[0].email    
+    datatype: email
+    required: False
+  - Street address: users[0].address.address
+    address autocomplete: True
+  - Unit: users[0].address.unit
+    required: False
+  - City: users[0].address.city
+  - State: users[0].address.state
+    code: states_list()
+  - Zip: users[0].address.zip
+---
+code: |
+  allowed_courts = [
+      "Superior Court",
+      "Housing Court",
+      "Juvenile Court",
+      "Land Court",
+      "Probate and Family Court"
+      ]
+---
+id: interpreter
+comment: |
+  This question is required for the cover page we send to the court,
+  even if the form does not use it.
+question: |
+  Do you need an interpreter?
+subquestion: |
+  You have the right to an interpreter.
+
+  If there is a chance you may not understand everything that is said in English, or if other people may not be able to understand you, ask for an interpreter.
+
+  You do not have to speak only through the interpreter, but you may have one if you need one.
+  
+fields:
+  - I need an interpreter: user_needs_interpreter
+    datatype: yesnoradio
+  - My preferred language is: user_preferred_language 
+    show if: user_needs_interpreter
+---
+id: court division 
+question: |
+  Select the **Trial Court** where your case was heard.
+fields:  
+  - no label: trial_court    
+    datatype: object    
+    choices: macourts.filter_courts(allowed_courts)
+---
+id: trial court docket number 
+question: |
+  What is the **Trial Court** docket number for your case?
+fields:
+  - Docket number: trial_court_docket_number
+--- 
+id: plaintiff
+question: |
+  Who is the **plaintiff** in your Trial Court case? 
+subquestion: |
+  This could be you. If you are a plaintiff, please be sure to include yourself. You may also have more than one plaintiff in this case. 
+  
+  **If there is more than one plaintiff, you can enter more than one name.**
+fields:
+  - Plantiff(s): plaintiff_name
+    input type: area
+    rows: 6
+--- 
+id: defendant
+question: |
+  Who is the **defendant** in your Trial Court case?
+subquestion: |
+  This could be you. If you are a defendant, please be sure to include yourself. You may also have more than one defendant in this case. 
+  
+  **If there is more than one defendant, you can enter more than one name.**
+fields:
+  - Defendant(s): defendant_name
+    input type: area
+    rows: 6
+---
+id: date trial court entered interlocutory order
+question: |
+  When did the **Trial Court** enter the order that you are asking to be reviewed?
+fields:
+  - Date: trial_court_interlocutory_order_date
+    datatype: date  
+---
+id: date notice of appeal filed
+question: |  
+  When did you file a notice of appeal in the **Trial Court**?
+subquestion: |
+  Please provide the date on which the trial court entered the interlocutory order that you are asking to the single justice to review.
+fields:
+  - Date: date_notice_of_appeal_filed
+    datatype: date  
+---
+id: nature of interlocutory order
+question: |
+  What is the nature of the interlocutory order that you would like the justice to review?
+subquestion: |
+  For example, if you are seeking review of the amount of child support you were ordered to pay, you would enter: "temporary order for child support". 
+fields: 
+  - Nature of Interlocutory Order: nature_of_order
+    input type: area
+    rows: 6
+---
+id: name of trial court judge
+question: |
+  What is the name of the **Trial Court** judge who entered the judgment against you?
+fields:
+  - Name: trial_court_judge
+---
+id: legal issues raised
+question: |
+  To the best of your ability, list the legal issues raised by this petition.
+fields:
+  - no label: legal_issues
+    input type: area 
+    rows: 6
+---
+id: reconsideration in the trial court
+question: |
+  Have you filed a petition for reconsideration in the trial court? 
+subquestion: |
+  You are not required to file a petition for reconsideration in the trial court.
+fields: 
+  - no label: file_type
+    input type: radio
+    choices:
+      - I have not filed and do not intend to file a petition for reconsideration in the trial court.: I have not filed and do not intend to file a petition for reconsideration in the trial court
+      - I have served or filed a petition for reconsideration in the trial court, and the trial court judge has not yet ruled on my petition for reconsideration.: I have served or filed a petition for reconsideration in the trial court, and the trial court judge has not yet ruled on my petition for reconsideration
+      - I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration.: I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration 
+  - Enter the date your petition for reconsideration was denied.: motion_reconsideration_denied_date
+    datatype: date 
+    js show if: |
+      val("file_type") == "I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration"
+  - Enter the text of the trial court judge's order denying your petition for reconsideration. In the alternative you may include a copy of the order denying the petition for reconsideration in the appendix to your petition.: trial_court_judge_text
+    input type: area 
+    rows: 6
+    js show if: |
+      val("file_type") == "I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration"
+---
+id: relief_sought
+question: |
+  What are you asking for?
+subquestion: |
+  Describe what you are asking the single justice of the Appeals Court to do. 
+  
+  Be as specific as possible.
+fields:
+  - no label: relief_sought
+    input type: area
+    rows: 6
+--- 
+id: method of service
+question: |
+  What **method of delivery** have you used or will you use to provide the required copies of the petition, memorandum and supporting materials to the plaintiffs' attorney(s)?
+subquestion: |
+  **You are required to provide a copy of this petition, memorandum and supporting materials to the plaintiffs' attorney(s).** 
+  
+  If the plaintiff does not have an attorney, you are required to serve a copy on the self-represented plaintiff.  
+  
+  You should not provide a copy of your affidavit of indigency, if any, to anyone except the Appeals Court.  
+field: method_of_service
+dropdown:
+  - efile and serve (efilema.com)
+  - email
+  - mail
+  - hand delivery
+---
+id: parties to be served
+question: |
+  List the name and address or email address of each attorney or self-represented party that you have served or will serve with copies of your petition, memorandum and supporting materials.
+subquestion: |
+  If you are serving more than one attorney or party, you may list more than one in the space provided.
+fields:
+  - no label: parties_to_be_served
+    input type: area 
+    rows: 6
+---
+id: service date
+question: |
+  When did or will you make service?
+subquestion: |
+  **You are required to provide a copy of this petition, memorandum and supporting materials to the plaintiffs' attorney(s).** 
+fields:
+  - Date: service_date
+    datatype: date  
+---
+id: procedural history
+question: |
+  What is the **procedural history** of your case?
+subquestion: |
+  **The procedural history is a list of the court proceedings in the Trial Court given in the order they happened.**  
+ 
+  Please describe the facts of your case with a particular focus on the facts relevant to the temporary order that you are asking the single justice to review.  
+  
+fields:
+  - no label: procedural_history
+    input type: area 
+    rows: 6
+---
+id: interlocutory order is the product of an error 
+question: |
+  Can you demonstrate that the order you are challenging is the result of an error of law occurred? Was there an abuse of the trial judge's discretion?
+subquestion: |
+   Make your legal argument, with citations to appropriate authorities and your record appendix, as to why the challenged interlocutory order was the product of an error of law or was an abuse of the trial court judge's discretion.
+fields: 
+  - no label: product_of_error
+    input type: area
+    rows: 6
+---
+id: statement of facts
+question: |
+  What is the **factual history** of your tenancy or former ownership of the property? How did it end?  
+subquestion: |
+  Include any other relevant factual history that the single justice should know in deciding your petition.  
+   
+  For example, if you filed a complaint with your local inspectional services department, describe the complaint including the date it was made and the resolution after the inspection.
+fields:
+  - no label: statement_of_facts
+    input type: area 
+    rows: 6
+---
+id: argument summary
+question: |
+  Summarize your argument
+subquestion: |
+  Most petitions for a stay are decided on the papers without holding a hearing.  Therefore, it is important that you include anything that you want the single justice to know about your case before deciding your petition is included in your petition and memorandum.  
+   
+  Provide any other relevant information that you want the single justice to know about your case.
+fields:
+  - no label: argument_summary
+    input type: area 
+    rows: 6
+---
+id: record appendix
+question: |
+  You are required to submit copies of relevant Trial Court documents. 
+subquestion: |  
+  Examples include: 
+  
+    * Dockets 
+    
+    * Relevant motions and oppositions
+    
+    * The order that you want reviewed
+fields:
+  - no label: record_appendix
+    datatype: files
+    required: False
+---
+code: |
+  form_to_file_no_cover = combined_motion
+---
+---
+id: download form
+event: download
+decoration: file-download
+question: |
+  % if not defined('email_success') or not email_success:
+  Review, Download, and Send Form
+  % else:
+  Form delivered
+  % endif
+subquestion: |
+  % if not defined('email_success') or not email_success:
+  Thank you ${users[0]}. Your form is ready to send to the court. **It is not
+  delivered until you complete the delivery process below.**
+  
+  1. Click the preview image below to open the form in a new window.
+  1. Download and save or print a copy of this form for your 
+  records.
+  1. Click "Submit to ${courts[0]}" to send it to the court. 
+  1. You will have a chance to add instructions to the clerk and see the cover page before final delivery.
+  % else:
+  If you do not hear from the court in 1 business day, call the   Appeals Court Clerk's Office: 617-921-4443 
+  
+  The Appeals Court Clerk's Office is open:  
+  Monday - Friday  
+  8:30am - 4:30pm
+  % endif
+  
+  ${ form_to_file_no_cover }  
+  
+  % if not defined('email_success') or not email_success:
+    ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
+    
+  Or download/email below:
+  
+  % else:
+    Your email has already been delivered to ${courts[0]}
+    
+  % for file in final_form_to_file:
+  % if hasattr(file, 'info'):
+  * [:file-download: ${ file.info.get("filename") }](${file.url_for()})
+  % elif hasattr(file, 'file_info'):
+  * [:file-download: ${ file.file_info.get("filename") }](${file.url_for()})
+  % else:
+  * [:file-download: ${ str(file) }](${file.url_for()})
+  % endif
+  % endfor 
+  % endif
+progress: 100
+section: download
+attachment code: motion_attachment["final"]
+---
+code: |
+  combined_motion = pdf_concatenate(motion_attachment['final'], record_appendix, filename="petition_for_single_justice_review.pdf")
+---
+code: |
+  if is_indigent:
+    final_form_to_file = [general_cover_sheet, combined_motion, affidavitofindigency_attachment]
+  else:
+    final_form_to_file = [general_cover_sheet, combined_motion ]
+---
+objects:
+  - motion_attachment: DADict
+---
+attachment:
+  - name: 231 118 Suffolk Lab template_appeals
+    variable name: motion_attachment[i]
+    filename: 231_118_Suffolk_Lab_template_appeals
+    docx template file: 231_118_Suffolk_Lab_template_appeals.docx
