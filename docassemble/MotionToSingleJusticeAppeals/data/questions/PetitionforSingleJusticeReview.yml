@@ -4,6 +4,9 @@ include:
   - docassemble.AffidavitofIndigencyMAVC:affidavit_body.yml
   - docassemble.MassAppealsCourt:appeals-basic-questions.yml
 ---
+metadata: 
+  title: Single Justice Appeals
+---
 code: |
   courts[0] = macourts.matching_appeals_court("")
 ---
@@ -26,24 +29,24 @@ code: |
   defendant_name
   trial_court
   trial_court_docket_number
+  trial_court_judge
   trial_court_interlocutory_order_date
   nature_of_order
-  trial_court_judge
   legal_issues
   file_type
   if file_type == "I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration":  
     motion_reconsideration_denied_date 
     trial_court_judge_text
   relief_sought 
-  parties_to_be_served
-  method_of_service
-  parties_to_be_served
-  service_date
   procedural_history
   statement_of_facts
   product_of_error
   argument_summary
   record_appendix
+  parties_to_be_served
+  method_of_service
+  parties_to_be_served
+  service_date
   indigency_intro
   fees['Appeal cost'].waive = True
   fees['Appeal cost'].amount = 315.00
