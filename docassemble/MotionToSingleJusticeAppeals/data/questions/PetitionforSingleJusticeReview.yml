@@ -152,7 +152,7 @@ id: plaintiff
 question: |
   Who is the **plaintiff** in your Trial Court case? 
 subquestion: |
-  This could be you. If you are a plaintiff, please be sure to include yourself. You may also have more than one plaintiff in this case. 
+  This could be you. If you are a plaintiff, be sure to include yourself. You may also have more than one plaintiff in this case. 
   
   **If there is more than one plaintiff, you can enter more than one name.**
 fields:
@@ -164,7 +164,7 @@ id: defendant
 question: |
   Who is the **defendant** in your Trial Court case?
 subquestion: |
-  This could be you. If you are a defendant, please be sure to include yourself. You may also have more than one defendant in this case. 
+  This could be you. If you are a defendant, be sure to include yourself. You may also have more than one defendant in this case. 
   
   **If there is more than one defendant, you can enter more than one name.**
 fields:
