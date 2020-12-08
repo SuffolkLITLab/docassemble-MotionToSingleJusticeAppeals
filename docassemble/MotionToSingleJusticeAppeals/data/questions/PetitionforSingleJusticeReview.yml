@@ -37,25 +37,55 @@ code: |
   if file_type == "I filed a petition for reconsideration, and the trial court judge denied my petition for reconsideration":  
     motion_reconsideration_denied_date 
     trial_court_judge_text
+  if has_evidence:
+    review_exhibits
+    ocr_task  
   relief_sought 
   procedural_history
   statement_of_facts
   product_of_error
   argument_summary
-  record_appendix
+  # record_appendix
   parties_to_be_served
   method_of_service
   parties_to_be_served
   service_date
   indigency_intro
-  fees['Appeal cost'].waive = True
-  fees['Appeal cost'].amount = 315.00
+  fees['Filing fee'].waive = True
+  fees['Filing fee'].amount = 315.00
   ask_affidavit_questions
   if not is_indigent:
     doesnt_qualify_interstitial
   basic_questions_signature_flow
   users[0].signature
   download
+---
+code: |
+  other_parties[0].name.first = plaintiff_name
+---
+code: |
+  users[0].name.first = defendant_name
+---
+objects:
+  - other_parties: PeopleList.using(ask_number=True, target_number=1)
+  - users: PeopleList.using(ask_number=True, target_number=1)
+  - prepped_exhibits: DAFile.using(filename='exhibits.pdf')
+---
+need: prepped_exhibits
+code: |
+  ocr_task = background_action('process_exhibits')
+---
+event: process_exhibits
+code: |
+  prepped_exhibits.initialize(filename="exhibits.pdf")
+  prepped_exhibits.make_ocr_pdf(exhibits, psm=1)
+  prepped_exhibits.bates_number(prefix='EX-')
+  background_response_action('save_results',results=prepped_exhibits)
+---
+event: save_results
+code: |
+  prepped_exhibits = action_argument('results')
+  background_response()
 --- 
 id: info screen
 question: |
@@ -70,7 +100,7 @@ question: |
   Fee waiver questions
 subquestion: |
   The next questions will be used to find out if you
-  qualify for a fee waiver. The fee to file a Motion to Stay
+  qualify for a fee waiver. The fee to file a Single Justice appeal
   is $315.00.
 ---
 id: contact information
@@ -340,9 +370,63 @@ subquestion: |
     
     * The order that you want reviewed
 fields:
-  - no label: record_appendix
+  - Do you have any documents to share with the judge?: has_evidence
+    datatype: yesnoradio
+  - I state that filing a complete record appendix is impracticable.: no_record_statement
+    datatype: yesno
+    show if: 
+      variable: has_evidence      
+      is: False
+  - Tap "browse" and choose all of the documents you want to upload at once. You can edit or add additional documents on the next screen.: exhibits
     datatype: files
-    required: False
+    show if: has_evidence
+    maximum image size: 1024
+    image upload type: jpeg    
+    accept: |
+      "image/*, image/png,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,.pdf"
+validation code: |
+  if has_evidence and sum(exhibit.size_in_bytes() for exhibit in exhibits) > (15 * 1024 * 1024):
+    validation_error("Please upload a file smaller than 15 MB.")
+---
+table: exhibits.table
+rows: exhibits
+allow reordering: True
+columns:
+  - File name: showifdef(row_item.attr_name('filename'))
+  # - Size: row_item.size_in_bytes() / 1024 / 1024
+  - Thumbnail: row_item.show(width="100px")  
+delete buttons: True
+---
+id: add additional document
+question: |
+  Exhibit document ${i+1}  
+fields:
+  - no label: exhibits[i]
+    datatype: file
+    accept: |
+      "image/*, image/png,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,.pdf"   
+validation code: |
+  # Upload field creates a DAFileList
+  # We want it to be a plain DAFile instead
+  if isinstance(exhibits[i], DAFileList):
+    temp_name = exhibits[i].instanceName
+    exhibits[i] = next(iter(exhibits[i]))
+    # Make sure the "instanceName" shows the correct position in the list,
+    # instead of showing a nested DAFileList's instanceName
+    exhibits[i].instanceName = temp_name
+---
+id: review exhibits
+question: |
+  Review your exhibits
+subquestion: |
+  Look at the exhibits below. If you want to change the order, use the arrows
+  to move an exhibit up or down in the list. Click "delete" or "add another"
+  to change which exhibits you send to the court.
+  
+  ${ exhibits.table }
+  
+  ${exhibits.add_action() }
+continue button field: review_exhibits 
 ---
 code: |
   form_to_file_no_cover = combined_motion
@@ -400,13 +484,28 @@ section: download
 attachment code: motion_attachment["final"]
 ---
 code: |
-  combined_motion = pdf_concatenate(motion_attachment['final'], record_appendix, filename="petition_for_single_justice_review.pdf")
----
-code: |
   if is_indigent:
     final_form_to_file = [general_cover_sheet, combined_motion, affidavitofindigency_attachment]
   else:
     final_form_to_file = [general_cover_sheet, combined_motion ]
+---
+code: |
+  if has_evidence:
+    if not ocr_task.ready():
+      waiting_screen
+    prepped_exhibits.set_attributes(private=False)
+    if prepped_exhibits.size_in_bytes() < 10 * 1024 * 1024:
+      combined_motion_temp = pdf_concatenate(motion_attachment["final"], prepped_exhibits, filename="single_justice_appeal.pdf")
+    else:
+      combined_motion_temp = [motion_attachment["final"]]
+  else:
+    combined_motion_temp = [motion_attachment["final"]]
+  combined_motion = pdf_concatenate(combined_motion_temp, filename="single_justice_appeal.pdf")
+---
+event: waiting_screen
+reload: True
+question: |
+  <i class="fas fa-cog fa-spin"></i> Please wait while we process your documents . . . <i class="fas fa-cog fa-spin"></i>
 ---
 objects:
   - motion_attachment: DADict
@@ -416,3 +515,34 @@ attachment:
     variable name: motion_attachment[i]
     filename: 231_118_Suffolk_Lab_template_appeals
     docx template file: 231_118_Suffolk_Lab_template_appeals.docx
+---
+id: email to court
+template: email_to_court_template
+subject: |
+  MassAccess submission from ${users} intended for ${courts[0]}
+content: |
+  % if has_evidence and prepped_exhibits.size_in_bytes() > 10 * 1024 * 1024:
+  **The user provided an attachment that is too large to email.**
+  [Link to exhibits](${ prepped_exhibits.url_for(external=True) } )
+  % endif
+  
+  At ${current_datetime().format_datetime()},
+  ${users} submitted the attached ${package_title} form(s).
+
+  &nbsp;        | &nbsp;
+  --------------|-----------
+  Date of email | ${current_datetime().format_datetime()}
+  Pages | ${num_package_pages }  
+  Preferred language | ${ user_preferred_language if user_needs_interpreter else 'English' }
+  Mobile phone | ${showifdef('users[0].mobile_number')}
+  Other phone | ${showifdef('users[0].phone_number')}
+  Email | ${showifdef('users[0].email')}
+  Contact details/other | ${showifdef('users[0].other_contact_method')}
+  
+  Comments for clerk: 
+  
+  ${ showifdef('comments_to_clerk')}
+  
+  Please contact ${users} in the next business day to
+  confirm that you received this message.
+    
