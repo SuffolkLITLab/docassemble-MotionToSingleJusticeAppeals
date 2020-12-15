@@ -98,9 +98,9 @@ id: info screen
 question: |
   Petition for Single Justice Review
 subquestion: |
-  Use this form if you would like to appeal from a decision
-  made by the trial court judge that is not a final
-  judgment of the court. The law that allows for 
+  Use this form if you would like a single justice of the Appeals 
+  Court to review a decision made by the trial court judge that
+  is not a final judgment of the court. The law that allows for 
   this kind of appeal is [G.L. c. 231, s. 118, paragraph 1](https://malegislature.gov/Laws/GeneralLaws/PartIII/TitleII/Chapter231/Section118).
   
   **You can only appeal an order of the trial court within 30 days
@@ -119,8 +119,8 @@ question: |
   Fee waiver questions
 subquestion: |
   The next questions will be used to find out if you
-  qualify for a fee waiver. The fee to file a Single Justice appeal
-  is $315.00.
+  qualify for a fee waiver. The fee to file a Single Justice 
+  petition is $315.00.
   
   If you do not qualify for a fee waiver, you can still finish this form.
   You will need to download and print it, or use eFile MA to deliver it
@@ -260,8 +260,10 @@ fields:
 ---
 id: nature of interlocutory order
 question: |
-  What kind of order do you need?
+  What order do you need the single justice to review?
 subquestion: |
+  Tell us about the decision made by the trial court judge.
+  
   For example, if you are seeking review of the amount of child support you were ordered to pay, you would enter: "temporary order for child support". 
 fields: 
   - Nature of Interlocutory Order: nature_of_order
@@ -368,15 +370,24 @@ fields:
 ---
 id: interlocutory order is the product of an error 
 question: |
-  Can you demonstrate that the order you are challenging is the result of an error of law occurred? Was there an abuse of the trial judge's discretion?
+  Your legal argument
 subquestion: |
-  For the single justice to grant relief, you must demonstrate that the interlocutory order that you are challenging was the result of a clear error of law or an abuse of the trial court judge's discretion.  Please make your argument as to why the trial court judge committed an error of law or abused their discretion. 
+  This is your chance to explain the reason the trial court was
+  wrong to the single justice.
   
-  An error of law occurs when the judge fails to properly follow a relevant statute, regulation, court rule or {legal precedent}.
+  You need to be specific about either:
   
-  An abuse of discretion occurs when the judge's decision is unreasonable in light of the relevant factual considerations. 
+  * An error of law.
+  * An abuse of the judge's discretion.
   
-  Whether you are alleging that the judge committed an error of law, abused their discretion, or both, include citations to legal authorities to support your argument.
+  An error of law occurs when the judge fails to properly follow 
+  a relevant statute, regulation, court rule or 
+  {legal precedent}.
+  
+  An abuse of discretion occurs when the judge's decision is unreasonable in light of the relevant facts. 
+
+  Do your best to use citations in your argument. A citation can
+  be the name of a case or law that supports your argument.
 fields: 
   - no label: product_of_error
     input type: area
