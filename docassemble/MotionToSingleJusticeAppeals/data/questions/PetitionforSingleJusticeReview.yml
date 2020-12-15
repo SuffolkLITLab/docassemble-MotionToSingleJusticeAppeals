@@ -11,7 +11,7 @@ code: |
   courts[0] = macourts.matching_appeals_court("")
 ---
 code: |
-  interview_short_title = "Ask the Appeals Court to review the Trial Court order"
+  interview_short_title = "Ask the Appeals Court to review a Trial Court order"
 ---
 id: interview order
 mandatory: True
@@ -377,7 +377,7 @@ subquestion: |
   
   You need to be specific about either:
   
-  * An error of law.
+  * An error of law; or
   * An abuse of the judge's discretion.
   
   An error of law occurs when the judge fails to properly follow 
