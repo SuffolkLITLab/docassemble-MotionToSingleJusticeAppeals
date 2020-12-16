@@ -101,16 +101,16 @@ subquestion: |
   Use this form if you would like a single justice of the Appeals 
   Court to review a decision made by the trial court judge that
   is not a final judgment of the court. The law that allows for 
-  this kind of appeal is [G.L. c. 231, s. 118, paragraph 1](https://malegislature.gov/Laws/GeneralLaws/PartIII/TitleII/Chapter231/Section118).
+  this is [G.L. c. 231, s. 118, paragraph 1](https://malegislature.gov/Laws/GeneralLaws/PartIII/TitleII/Chapter231/Section118).
   
-  **You can only appeal an order of the trial court within 30 days
-  of the judge's decision.**
+  **You can only seek review of an order of the trial court within 30 days
+  of the trial court judge's decision.**
   
   This form will be sent to a single justice of the appeals
   court for review.
   
   [Learn more](https://www.mass.gov/service-details/single-justice-practice)
-  about the single justice appeals process.
+  about the single justice petition process.
 continue button field: info_screen
 ---
 id: explain affidavit of indigency
@@ -436,11 +436,16 @@ subquestion: |
 fields:
   - Do you have any documents to share with the judge?: has_evidence
     datatype: yesnoradio
-  - I state that I am not able to submit the relevant documents at this time.: no_record_statement
-    datatype: yesno
+  - no label: no_record_statement
+    datatype: checkboxes
+    choices:
+      - I state that I am not able to submit the relevant documents at this time.: unable_to_submit
     show if: 
       variable: has_evidence      
       is: False
+    minlength: 1
+    validation messages:
+      minlength: You must state that you are unable to submit the relevant documents to continue.
   - Tap "browse" and choose all of the documents you want to upload at once. You can edit or add additional documents on the next screen.: exhibits
     datatype: files
     show if: has_evidence
@@ -530,6 +535,10 @@ subquestion: |
   % endif
   
   ${ form_to_file_no_cover }  
+  
+  % if is_indigent:
+  ${ affidavitofindigency_attachment }
+  % endif
   
   % if is_indigent and not defined('email_success') or not email_success:
     ${ action_button_html( url_action('form_delivery_complete'), id_tag="submitToCourt", label="Submit to " + str(courts[0].name), icon=send_icon, size="md", color="primary")}
@@ -639,4 +648,38 @@ content: |
   
   Please contact ${users} in the next business day to
   confirm that you received this message.
+---
+id: user role
+question: |
+  Did you file the first forms in the trial court, or did you respond to a case
+  that someone else started?
+fields: 
+  - no label: user_ask_role
+    datatype: radio
+    choices:
+      - I started the case: plaintiff
+      - I responded to the case: defendant
+  - note: |
+      Okay, you are the **Plaintiff** or Petitioner in the trial court. The other 
+      side is the **Defendant** or Respondent.
+    show if:
+      variable: user_ask_role
+      is: "plaintiff"
+  - note: |
+      Okay, you are the **Defendant** or Respondent in the trial court. The other 
+      side is the **Plaintiff** or Petitioner.
+    show if:
+      variable: user_ask_role
+      is: "defendant"
+help:
+  label: |
+    How do I know?
+  content: |
+    We need to know if you are the "Plaintiff" or the "Defendant" in your
+    trial court case.
     
+    If you are the first person to file a form in the case, you are the
+    "Plaintiff" or the "Petitioner."
+  
+    If you are responding to a case or court papers someone else filed, you are
+    the "Defendant" or the "Respondent."
