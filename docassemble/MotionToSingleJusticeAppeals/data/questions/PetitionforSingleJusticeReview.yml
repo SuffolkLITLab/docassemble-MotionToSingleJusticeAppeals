@@ -596,14 +596,21 @@ code: |
   if has_evidence:
     if not ocr_task.ready():
       waiting_screen
-    prepped_exhibits.set_attributes(private=False)
-    if prepped_exhibits.size_in_bytes() < 10 * 1024 * 1024:
-      combined_motion_temp = pdf_concatenate(motion_attachment["final"], prepped_exhibits, filename="single_justice_appeal.pdf")
+    # Make sure background task succeeded. If not, skip the OCRed PDF      
+    if not prepped_exhibits.ok:
+      try:
+        combined_motion_temp = pdf_concatenate(motion_attachment['final'], exhibits, filename="single_justice_petition.pdf")
+      except:
+        combined_motion_temp = motion_attachment['final']
     else:
-      combined_motion_temp = [motion_attachment["final"]]
+      prepped_exhibits.set_attributes(private=False)
+      if prepped_exhibits.size_in_bytes() < 10 * 1024 * 1024:
+        combined_motion_temp = pdf_concatenate(motion_attachment["final"], prepped_exhibits, filename="single_justice_petition.pdf")
+      else:
+        combined_motion_temp = [motion_attachment["final"]]
   else:
     combined_motion_temp = [motion_attachment["final"]]
-  combined_motion = pdf_concatenate(combined_motion_temp, filename="single_justice_appeal.pdf")
+  combined_motion = pdf_concatenate(combined_motion_temp, filename="single_justice_petition.pdf")
 ---
 event: waiting_screen
 reload: True
