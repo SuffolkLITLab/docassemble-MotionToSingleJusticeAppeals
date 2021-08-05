@@ -2,7 +2,7 @@
 include:
   - docassemble.MAVirtualCourt:basic-questions.yml
   - docassemble.AffidavitofIndigencyMAVC:affidavit_body.yml
-  - docassemble.MassAppealsCourt:appeals-basic-questions.yml
+  - old_mavc_appeals_basic_questions.yml
 ---
 metadata: 
   title: Petition to Single Justice (Appeals Court)
