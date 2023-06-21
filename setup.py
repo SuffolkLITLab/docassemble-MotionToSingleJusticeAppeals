@@ -43,17 +43,17 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MotionToSingleJusticeAppeals',
-      version='0.1.1',
-      description=('A docassemble extension.'),
+      version='0.2.0',
+      description=('A petition to a single justice on the Massachusetts Appeals court.'),
       long_description='# docassemble.MotionToSingleJusticeAppeals\r\n\r\nA docassemble extension.\r\n\r\n## Author\r\n\r\neconstantinou@su.suffolk.edu\r\n\r\n',
       long_description_content_type='text/markdown',
-      author='System Administrator',
+      author='Eleni Constantinou',
       author_email='econstantinou@su.suffolk.edu',
       license='The MIT License (MIT)',
-      url='https://docassemble.org',
+      url='https://courtformsonline.org',
       packages=find_packages(),
       namespace_packages=['docassemble'],
-      install_requires=[],
+      install_requires=['docassemble.ALToolbox'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MotionToSingleJusticeAppeals/', package='docassemble.MotionToSingleJusticeAppeals'),
      )

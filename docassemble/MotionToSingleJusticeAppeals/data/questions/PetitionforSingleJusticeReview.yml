@@ -3,8 +3,9 @@ include:
   - docassemble.MAVirtualCourt:basic-questions.yml
   - docassemble.AffidavitofIndigencyMAVC:affidavit_body.yml
   - old_mavc_appeals_basic_questions.yml
+  - docassemble.ALToolbox:collapse_template.yml
 ---
-metadata: 
+metadata:
   title: Petition to Single Justice (Appeals Court)
 ---
 code: |
@@ -57,21 +58,71 @@ code: |
   ask_affidavit_questions
   if not is_indigent:
     doesnt_qualify_interstitial
+  get_pronouns # make sure this function is defined before the preview
   basic_questions_signature_flow
   users[0].signature
   download
+---
+imports:
+  - random
+---
+id: users's name
+question: |
+  What is your name?
+fields:
+  - First Name: users[0].name.first
+  - Middle Name: users[0].name.middle
+    required: False
+  - Last Name: users[0].name.last
+  - Suffix: users[0].name.suffix
+    code: |
+      name_suffix()
+    required: False
+  # Hardcoding pronouns here although they're implemented more neatly
+  # in current AssemblyLine
+  - What are your pronouns? (optional): users[0].pronouns
+    datatype: checkboxes
+    choices:
+      - She/her/hers: she/her/hers
+      - He/him/his: he/him/his
+      - They/them/theirs: they/them/theirs
+      - Ze/zir/zirs: ze/zir/zirs
+      - Something else: self-described
+    none of the above: Prefer not to say
+    required: False
+    help: |
+      A pronoun is a word that can be used in place of your name. For example: he, she, or they.
+      Learn more at [pronouns.org](https://pronouns.org/).
+  - note: |
+      ${ collapse_template(explain_why_pronouns) }
+  - Self-described pronouns: users[0].pronouns_self_described
+    datatype: area
+    show if: users[0].pronouns["self-described"]
+---
+template: explain_why_pronouns
+subject: |
+  How will you use my pronouns?
+content: |
+  The pronouns that you write here will be added to the bottom
+  of your motion to the Appeals Court.
+  Sharing your pronouns is optional. If you share your pronouns,
+  it may help the judge use the right words when they mention you
+  in court or in their written decision.
+---
+code: |
+  def get_pronouns(person):
+    if person.pronouns.all_false():
+        return {"Prefer not to say"}
+    pronouns = set(person.pronouns.true_values()) - {'self-described'}
+    if person.pronouns.get("self-described"):
+        pronouns = pronouns.union(person.pronouns_self_described.splitlines())
+    return pronouns
 ---
 code: |
   if user_role == 'plaintiff':
     other_parties[0].name.first = defendant_name
   else:
     other_parties[0].name.first = plaintiff_name
----
-code: |
-  if user_role == 'plaintiff':
-    users[0].name.first = plaintiff_name
-  else:
-    users[0].name.first = defendant_name
 ---
 objects:
   - other_parties: PeopleList.using(ask_number=True, target_number=1)
