@@ -7,6 +7,53 @@ include:
 ---
 metadata:
   title: Petition to Single Justice (Appeals Court)
+  short title: Single Justice Appeal
+  description: |
+    If you would like a single justice of the Appeals Court to overrule a decision made by the trial 
+    court judge that is not yet a final judgment of the court, use this form.
+
+    You can use this form to ask the Appeals Court to review the decision for mistakes in the law or
+    abuse of discretion. You must provide a legal reason that the judge's decision was wrong.
+  
+    You can only seek review of an order of the trial court within 30 days of the trial court judge's 
+    decision.
+  can_I_use_this_form: |
+    You can use this form if:
+
+    * The judgment of the trial court is not yet final
+    * It was made in the last 30 days
+
+    If the judge has made a final decision (entered judgment), you need to make
+    an appeal to the full appeals court instead.
+  before_you_start: |
+    Before you start, you will need:
+
+    * The docket number of your case in the trial court
+    * The name of the trial court judge who entered the judgment against you
+    * The date the trial court entered the order you are asking to be reviewed
+    * Information about the decision made by the trial court judge
+    * A legal reason that the judge's decision was wrong
+  maturity: production
+  estimated_completion_minutes: 20
+  estimated_completion_delta: 10
+  languages:
+    - en
+  help_page_url: https://www.mass.gov/info-details/single-justice-practice
+  help_page_title: Single Justice Practice
+  LIST_topics: 
+    - CO-07-02-00-00
+  tags: 
+    - CO-07-02-00-00
+  jurisdiction: NAM-US-US+MA
+  original_form_published_on: 2022
+  review_date: 2024-06-01
+  form_titles:
+    - Petition for Single Justice Review
+  fees:
+    - Filing fee: 0.00
+  update_notes: |
+    This form was created solely for purposes of using with this e-filing tool, but it
+    is an official method of filing with the Appeals Court.
 ---
 code: |
   courts[0] = macourts.matching_appeals_court("")
