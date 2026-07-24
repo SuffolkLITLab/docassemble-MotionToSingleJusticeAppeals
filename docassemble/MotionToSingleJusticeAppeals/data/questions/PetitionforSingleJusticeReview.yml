@@ -207,8 +207,7 @@ subquestion: |
   This form will be sent to a single justice of the appeals
   court for review.
   
-  [Learn more](https://www.mass.gov/service-details/single-justice-practice)
-  about the single justice petition process.
+  [Learn more about the single justice petition process](https://www.mass.gov/service-details/single-justice-practice).
 continue button field: info_screen
 ---
 id: explain affidavit of indigency
@@ -626,7 +625,7 @@ subquestion: |
   print or use [eFileMA](http://www.efilema.com/) to file this document.
   % endif  
   % else:
-  If you do not hear from the court in 1 business day, call the   Appeals Court Clerk's Office: 617-921-4443 
+  If you do not hear from the court in 1 business day, call the Appeals Court Clerk's Office: [617-725-8106](tel:+16177258106)
   
   The Appeals Court Clerk's Office is open:  
   Monday - Friday  

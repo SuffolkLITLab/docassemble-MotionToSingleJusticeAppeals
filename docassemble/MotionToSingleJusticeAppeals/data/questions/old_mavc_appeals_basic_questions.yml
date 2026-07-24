@@ -26,7 +26,7 @@ subquestion: |
   
   If you have questions about this form or the court process, 
   call the Appeals Court Clerk's Office:  
-  617-921-4443 
+  [617-725-8106](tel:+16177258106)
   Monday-Friday  
   8:30am - 4:30pm
   % if chat_partners_available().help:
@@ -67,17 +67,13 @@ subquestion: |
   % if email_success:
   If you do not hear from the court in 1 business day, call the Appeals Court 
   Clerk's Office:  
-  617-921-4443 
-  Monday-Friday  
-  8:30am - 4:30pm
-  
   % else:
   Something went wrong delivering your form to the ${courts[0]}.  
   Try again later or call the Appeals Court Clerk's Office:  
-  617-921-4443 
+  % endif
+  [617-725-8106](tel:+16177258106)
   Monday-Friday  
   8:30am - 4:30pm
-  % endif
 continue button field: email_status
 continue button label: Back to download screen
 ---
