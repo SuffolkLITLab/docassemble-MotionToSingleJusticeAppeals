@@ -161,7 +161,7 @@ subquestion: |
  
   Press below to deliver the form.
 fields:
-  - no label: acknowledge_email_notices
+  - "Final Review With Cover Page": acknowledge_email_notices
     datatype: checkboxes
     choices:
       - I understand that I will get notices from the court by email
