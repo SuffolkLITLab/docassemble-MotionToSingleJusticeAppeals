@@ -533,7 +533,7 @@ subquestion: |
 fields:
   - Do you have any documents to share with the judge?: has_evidence
     datatype: yesnoradio
-  - no label: no_record_statement
+  - "You are required to submit copies of relevant Trial Court documents.": no_record_statement
     datatype: checkboxes
     choices:
       - I state that I am not able to submit the relevant documents at this time.: unable_to_submit
@@ -661,7 +661,7 @@ section: download
 attachment code: motion_attachment["final"]
 ---
 if: not is_indigent
-id: download form
+id: "download form 2"
 event: download
 decoration: file-download
 question: |
@@ -712,6 +712,7 @@ code: |
 ---
 event: waiting_screen
 reload: True
+id: "i class fas fa cog fa spin i please wait while we process your documents i class fas fa cog fa spin i"
 question: |
   <i class="fas fa-cog fa-spin"></i> Please wait while we process your documents . . . <i class="fas fa-cog fa-spin"></i>
 ---
